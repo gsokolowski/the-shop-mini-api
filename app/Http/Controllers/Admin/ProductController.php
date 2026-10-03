@@ -17,6 +17,7 @@ class ProductController extends Controller
             ->latest()
             ->paginate(20);
 
+        // call vew and load products
         return view('admin.products.index', compact('products'));
     }
 

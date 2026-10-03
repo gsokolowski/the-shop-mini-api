@@ -22,13 +22,16 @@
 
     <main class="container">
         @if (session('success'))
+            <!-- User Product created, updated deleted -->
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
         @if (session('error'))
+            <!-- Admin users cannot be updated ect -->
             <div class="alert alert-error">{{ session('error') }}</div>
         @endif
 
+        <!-- $errors — validation error list -->
         @if ($errors->any())
             <div class="alert alert-error">
                 <ul>
@@ -39,6 +42,7 @@
             </div>
         @endif
 
+        <!-- here goes content Product CRUD  User CRUD and later Orders -->
         @yield('content')
     </main>
 </body>
