@@ -3,6 +3,9 @@
 namespace App\Observers;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductObserver
 {
@@ -11,7 +14,13 @@ class ProductObserver
      */
     public function created(Product $product): void
     {
-        //
+        Cache::forget('products.index');
+
+        Log::info('Product created', [
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'by_user_id' => Auth::id(),
+        ]);
     }
 
     /**
@@ -19,7 +28,13 @@ class ProductObserver
      */
     public function updated(Product $product): void
     {
-        //
+        Cache::forget('products.index');
+
+        Log::info('Product updated', [
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'by_user_id' => Auth::id(),
+        ]);
     }
 
     /**
@@ -27,22 +42,13 @@ class ProductObserver
      */
     public function deleted(Product $product): void
     {
-        //
+        Cache::forget('products.index');
+
+        Log::info('Product deleted', [
+            'product_id' => $product->id,
+            'name' => $product->name,
+            'by_user_id' => Auth::id(),
+        ]);
     }
 
-    /**
-     * Handle the Product "restored" event.
-     */
-    public function restored(Product $product): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Product "force deleted" event.
-     */
-    public function forceDeleted(Product $product): void
-    {
-        //
-    }
 }
