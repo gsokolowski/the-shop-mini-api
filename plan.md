@@ -39,6 +39,32 @@ Admin-only middleware (`is_admin`).
 
 ---
 
+## API Auth (Sanctum — customers)
+
+### Register + Login
+- `App\Http\Controllers\Api\AuthController`
+  - `POST /api/register` — create user, return Sanctum token
+  - `POST /api/login` — validate credentials, return Sanctum token
+  - `POST /api/logout` — revoke current token (`auth:sanctum`)
+- `App\Http\Requests\Api\RegisterRequest`
+- `App\Http\Requests\Api\LoginRequest`
+- Customers only (`is_admin = false` on register)
+
+### Welcome email (Observer + Redis queue)
+| Piece | Path / role |
+|---|---|
+| Observer | `app/Observers/UserObserver.php` on `User` `created` |
+| Mailable | `app/Mail/WelcomeMail.php` |
+| Queue | Redis (`QUEUE_CONNECTION=redis`) |
+
+Flow:
+1. User registers → `User` created
+2. `UserObserver::created` runs
+3. Observer queues `WelcomeMail` (Redis)
+4. `php artisan queue:work redis` sends the email
+
+Note: observer also runs if Admin creates a user in the panel.
+
 ## API (Sanctum authentication)
 
 ### Product (public — outside auth)
