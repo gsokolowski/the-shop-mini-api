@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
+            'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+            // Alias used by API routes (Laravel Extension cannot resolve auth:sanctum)
+            'auth.sanctum' => \App\Http\Middleware\AuthenticateSanctum::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
 
