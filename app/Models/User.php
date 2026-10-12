@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
@@ -53,4 +54,11 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
         ];
     }
+
+    // User HasMany orders
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
 }
