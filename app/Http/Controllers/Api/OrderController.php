@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use App\Events\OrderPlaced;
 
 class OrderController extends Controller
 {
@@ -57,6 +58,12 @@ class OrderController extends Controller
             // eager-load the product relation on every order in that collection (one query for all related products, instead of N+1)
             return (new EloquentCollection($created))->load('product');
         });
+
+        // Notify listeners for each created order
+        foreach ($orders as $order) {
+            // Dispatch OrderPlaced Event for each order
+            OrderPlaced::dispatch($order);
+        }
 
         return OrderResource::collection($orders);
     }
