@@ -1,25 +1,76 @@
 # the-shop-mini-api
 
-A small Laravel shop. Staff manage the catalog and customers from a hand-built admin panel. Customers are ordinary users and never see that panel.
+A small Laravel shop: hand-built Blade admin for staff, Sanctum token API for customers.
 
-The admin UI is plain Blade. It does not use Breeze or Filament.
+**Not used:** Breeze, Filament, npm/Vite.
+
+## Stack
+
+- Laravel 12 / PHP 8.4
+- Laravel Sanctum (API tokens)
+- MySQL in Docker (`the-shop-mini-api`, port `3308`)
+- Redis queue (`QUEUE_CONNECTION=redis`)
+- Mail logged locally (`MAIL_MAILER=log`) unless you configure SMTP
 
 ## Admin panel
 
-Sign in at `/admin/login`. Only users with `is_admin` can get past the login; everyone else receives a 403.
+Sign in at `/admin/login`. Only `is_admin` users get in; others get 403.
 
-From the dashboard you can:
+- Dashboard (user/product counts)
+- Products CRUD (name, unique slug, description, price, stock)
+- Users CRUD (admin accounts cannot be updated or deleted)
 
-- Create, edit, and delete **products** (name, unique slug, description, price, stock)
-- Create, edit, and delete **users**
-
-After seeding, an admin account is available:
+After seeding:
 
 - Email: `admin@example.com`
 - Password: `password`
 
-The seeders also create 10 customers and 100 products.
+Also seeds 10 customers and 100 products.
 
-## Stack
+## Customer API
 
-Laravel 12, PHP 8.4, and Laravel Sanctum. Sanctum is installed on the user model; the customer API (public product list, product by slug, and placing an order) is still to be built.
+### Public
+
+| Method | Path | Notes |
+|---|---|---|
+| `GET` | `/api/products` | Product list (Laravel Cache) |
+| `GET` | `/api/products/{slug}` | Single product via `ProductResource` |
+
+### Auth (Sanctum)
+
+| Method | Path | Notes |
+|---|---|---|
+| `POST` | `/api/register` | Create customer (`is_admin = false`), return token |
+| `POST` | `/api/login` | Return token |
+| `POST` | `/api/logout` | Revoke current token (auth required) |
+| `GET` | `/api/user` | Current user (auth required) |
+
+### Orders (auth required)
+
+| Method | Path | Notes |
+|---|---|---|
+| `GET` | `/api/orders` | Current user’s orders |
+| `POST` | `/api/orders` | Body: `{ "product_ids": [1, 2] }` — decrements stock with row locks |
+
+## Async behavior
+
+- **User created** → `UserObserver` queues `WelcomeMail`
+- **Product saved/deleted** → `ProductObserver` refreshes/busts product index cache
+- **Order placed** → `OrderPlaced` → `SendOrderConfirmation` queues `OrderConfirmationMail`
+
+Run a worker locally:
+
+```bash
+php artisan queue:work redis
+```
+
+## Local run
+
+```bash
+php artisan serve
+# separate terminal:
+php artisan queue:work redis
+```
+
+App: `http://127.0.0.1:8000`  
+Admin: `http://127.0.0.1:8000/admin/login`
