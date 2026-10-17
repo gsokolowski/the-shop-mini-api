@@ -27,10 +27,6 @@ class OrderConfirmationMail extends Mailable implements ShouldQueue
     {
         return new Content(
             markdown: 'emails.order-confirmation',
-            with: [
-                'appName' => config('app.name'),
-                'appUrl' => config('app.url'),
-            ],
         );
     }
 }
