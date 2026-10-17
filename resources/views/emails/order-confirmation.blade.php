@@ -3,10 +3,10 @@
 
 You bought **{{ $order->product->name }}** for **{{ $order->price }}**.
 
-<x-mail::button :url="config('app.url')">
+<x-mail::button :url="$appUrl">
 Visit the shop
 </x-mail::button>
 
 Thanks,<br>
-{{ config('app.name') }}
+{{ $appName }}
 </x-mail::message>
