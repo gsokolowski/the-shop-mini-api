@@ -10,13 +10,13 @@ use Illuminate\View\View;
 
 class LoginController extends Controller
 {
-    public function create(): View
+    public function loginForm(): View
     {
         // Show the form (GET /admin/login)
         return view('admin.auth.login');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function login(Request $request): RedirectResponse
     {
         //Validate email + password.
         $credentials = $request->validate([
@@ -57,7 +57,7 @@ class LoginController extends Controller
         return redirect()->intended(route('admin.dashboard'));
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
 

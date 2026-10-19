@@ -7,13 +7,14 @@ use App\Http\Middleware\AuthenticateSanctum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 // http://127.0.0.1:8000/api/products
 Route::get('/products', [ProductController::class, 'index']);
 // http://127.0.0.1:8000/api/products/slug-name
 Route::get('/products/{slug}', [ProductController::class, 'show']);
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
 
 // behind the auth
 Route::middleware([AuthenticateSanctum::class])->group(function () {
